@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAINAVE - O seu melhor copiloto</title>
+
+    <!-- Estilos do Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            z-index: 1;
+        }
+
+        /* Card de busca flutuante */
+        .card-busca {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .card-busca input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-primario {
+            width: 100%;
+            padding: 12px;
+            background-color: #0066FF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* Painel Superior de Navegação Curva a Curva (Fase 3) */
+        .painel-manobra {
+            display: none;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: #111111;
+            color: #ffffff;
+            width: 90%;
+            max-width: 420px;
+            padding: 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icone-manobra {
+            font-size: 32px;
+            width: 45px;
+            text-align: center;
+        }
+
+        .texto-manobra {
+            flex: 1;
+        }
+
+        .texto-manobra .distancia {
+            font-size: 20px;
+            font-weight: bold;
+            color: #22c55e;
+        }
+
+        .texto-manobra .instrucao {
+            font-size: 14px;
+            color: #dddddd;
+            margin-top: 2px;
+        }
+
+        /* Botão para encerrar navegação */
+        .btn-encerrar {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            z-index: 1000;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Botão de Centralizar GPS */
+        .btn-gps {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            z-index: 1000;
+            background: #ffffff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+            cursor: pointer;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Card Principal de Busca -->
+    <div class="card-busca" id="caixa-principal">
+        <input type="text" id="campo-destino" placeholder="Para onde vamos? (ex: gion kyoto)" value="gion kyoto">
+        <button class="btn-primario" onclick="executarBusca()">Traçar Rota (UAINAVE)</button>
+    </div>
+
+    <!-- Painel Curva a Curva (Fase 3) -->
+    <div class="painel-manobra" id="painel-manobra">
+        <div class="icone-manobra" id="icone-manobra">⬆️</div>
+        <div class="texto-manobra">
+            <div class="distancia" id="distancia-manobra">-- m</div>
+            <div class="instrucao" id="texto-instrucao">Iniciando navegação...</div>
+        </div>
+    </div>
+
+    <!-- Botão Encerrar Rota -->
+    <button class="btn-encerrar" id="btn-encerrar" onclick="novaBusca()">❌ Encerrar Rota</button>
+
+    <!-- Botão de GPS -->
+    <button class="btn-gps" onclick="centralizarNoUsuario()" title="Centralizar"></button>
+
+    <!-- Resumo da Rota (Distância e Tempo Totais) -->
+    <div id="resumo-rota" style="background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: none; text-align: center; font-weight: bold; position: absolute; z-index: 1000; top: 10px; left: 50%; transform: translateX(-50%);">
+        <span id="distancia-total">Distância total: -- km</span> | 
+        <span id="tempo-total">Tempo: -- min</span>
+    </div>
+
+    <!-- Container do Mapa -->
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
